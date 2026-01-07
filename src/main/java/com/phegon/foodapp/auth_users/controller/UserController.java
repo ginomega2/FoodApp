@@ -3,7 +3,6 @@ package com.phegon.foodapp.auth_users.controller;
 import com.phegon.foodapp.auth_users.dtos.UserDTO;
 import com.phegon.foodapp.auth_users.services.UserService;
 import com.phegon.foodapp.response.Response;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-
+//@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
@@ -22,7 +21,13 @@ public class UserController {
     @GetMapping("/all")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Response<List<UserDTO>>> getAllUsers() {
-        return ResponseEntity.ok(userService.getAllUsers());
+        /**
+         * Retrieves a list of all users.
+         * This endpoint is accessible only to users with the 'ADMIN' authority.
+         * @return A ResponseEntity containing a Response object with a list of UserDTOs.
+         */
+    return ResponseEntity.ok(userService.getAllUsers());
+
 
     }
 

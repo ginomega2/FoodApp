@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -75,8 +76,10 @@ public class UserServiceImpl implements UserService {
     public Response<?> updateOwnAccount(UserDTO userDTO) {
         log.info("updateOwnAccount");
         User user = getCurrentLoggedInUser();
+
         String profileUrl = user.getProfileUrl();
         MultipartFile imageFile = userDTO.getImageFile();
+
         if(imageFile != null &&  !imageFile.isEmpty() ){
             if(profileUrl != null && !profileUrl.isEmpty()){
                 String keyName = profileUrl.substring(profileUrl.lastIndexOf("/")+1);
@@ -91,15 +94,20 @@ public class UserServiceImpl implements UserService {
         if(userDTO.getName()!=null) user.setName(userDTO.getName());
         if(userDTO.getPhoneNumber()!=null) user.setPhoneNumber(userDTO.getPhoneNumber());
         if(userDTO.getAddress()!=null) user.setAddress(userDTO.getAddress());
-        if(userDTO.getPassword()!=null) user.setPassword(userDTO.getPassword());
 
-        if(userDTO.getEmail() !=null && !userDTO.getEmail().equals(user.getEmail())) user.setEmail(userDTO.getEmail());{
+        //if(userDTO.getPassword()!=null) user.setPassword(userDTO.getPassword());
+        user.setUpdatedAt(LocalDateTime.now());
+
+        if(userDTO.getEmail() !=null && !userDTO.getEmail().equals(user.getEmail())) {
             if(userRepository.existsByEmail(userDTO.getEmail())){
                 throw new BadRequestException("Email ya existe");
             }
             user.setEmail(user.getEmail());
         }
-        user.setEmail(user.getEmail());
+
+        if (userDTO.getPassword() != null) {
+            user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        }
         userRepository.save(user);
         return Response.builder()
                 .statusCode(HttpStatus.OK.value())
